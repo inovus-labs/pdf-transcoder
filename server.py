@@ -29,7 +29,9 @@ def convert_xlsx_to_pdf(xlsx_path, output_dir):
         return True, None
     except Exception as e:
         return False, str(e)
-
+@app.route('/', methods=['GET'])
+def test():
+    return jsonify("This is test route"), 200
 @app.route('/upload', methods=['POST'])
 def upload_file():
     if 'file' not in request.files:
