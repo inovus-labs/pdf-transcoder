@@ -52,7 +52,7 @@ def upload_file():
 
         pdf_filename = filename.rsplit('.', 1)[0] + '.pdf'
         pdf_path = os.path.join(app.config['OUTPUT_FOLDER'], pdf_filename)
-
+        os.remove(file_path)
         return send_file(pdf_path, as_attachment=True, download_name=pdf_filename)
 
     return jsonify(error="Invalid file type"), 400
