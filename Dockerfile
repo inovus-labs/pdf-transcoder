@@ -1,7 +1,7 @@
 # Use an official Python runtime as a parent image
 FROM python:3.9-slim
 
-# Install LibreOffice
+# Install necessary packages
 RUN apt-get update && apt-get install -y \
     libreoffice \
     && rm -rf /var/lib/apt/lists/*
@@ -18,5 +18,5 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Make port 5000 available to the world outside this container
 EXPOSE 5000
 
-# Run app.py when the container launches
-CMD ["gunicorn", "-b", "0.0.0.0:5000", "app:app"]
+# Run server.py when the container launches
+CMD ["gunicorn", "-b", "0.0.0.0:5000", "server:app"]
