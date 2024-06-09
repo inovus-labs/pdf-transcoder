@@ -8,7 +8,7 @@ app = Flask(__name__)
 # Configuration
 UPLOAD_FOLDER = 'uploads'
 OUTPUT_FOLDER = 'output'
-ALLOWED_EXTENSIONS = {'xlsx'}
+ALLOWED_EXTENSIONS = {'xlsx','docx'}
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['OUTPUT_FOLDER'] = OUTPUT_FOLDER
@@ -30,11 +30,21 @@ def convert_xlsx_to_pdf(xlsx_path, output_dir):
     except Exception as e:
         return False, str(e)
     
+def convert_docx_to_pdf(docx_path, output_dir):
+    try:
+        command = ['libreoffice', '--headless', '--convert-to', 'pdf', docx_path, '--outdir', output_dir]
+        result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        if result.returncode != 0:
+            return False, result.stderr.decode()
+        return True, None
+    except Exception as e:
+        return False, str(e)
+    
 @app.route('/', methods=['GET'])
 def test():
     return jsonify("This is test route"), 200
 
-@app.route('/upload', methods=['POST'])
+@app.route('/xlsx-to-pdf', methods=['POST'])
 def upload_file():
     if 'file' not in request.files:
         return jsonify(error="No file part"), 400
@@ -51,6 +61,34 @@ def upload_file():
 
         # Convert XLSX to PDF
         success, error = convert_xlsx_to_pdf(file_path, app.config['OUTPUT_FOLDER'])
+        if not success:
+            return jsonify(error=error), 500
+
+        pdf_filename = filename.rsplit('.', 1)[0] + '.pdf'
+        pdf_path = os.path.join(app.config['OUTPUT_FOLDER'], pdf_filename)
+        os.remove(file_path)
+        return send_file(pdf_path, as_attachment=True, download_name=pdf_filename)
+
+    return jsonify(error="Invalid file type"), 400
+
+
+@app.route('/docx-to-pdf', methods=['POST'])
+def upload_docx_file():
+    if 'file' not in request.files:
+        return jsonify(error="No file part"), 400
+
+    file = request.files['file']
+    
+    if file.filename == '':
+        return jsonify(error="No selected file"), 400
+    
+    if file and allowed_file(file.filename) and file.filename.lower().endswith('.docx'):
+        filename = secure_filename(file.filename)
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        file.save(file_path)
+
+        # Convert DOCX to PDF
+        success, error = convert_docx_to_pdf(file_path, app.config['OUTPUT_FOLDER'])
         if not success:
             return jsonify(error=error), 500
 
