@@ -54,7 +54,7 @@ def upload_file():
     if file.filename == '':
         return jsonify(error="No selected file"), 400
     
-    if file and allowed_file(file.filename):
+    if file and file.filename.lower().endswith('.xlsx'):
         filename = secure_filename(file.filename)
         file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         file.save(file_path)
@@ -82,7 +82,7 @@ def upload_docx_file():
     if file.filename == '':
         return jsonify(error="No selected file"), 400
     
-    if file and allowed_file(file.filename) and file.filename.lower().endswith('.docx'):
+    if file  and file.filename.lower().endswith('.docx'):
         filename = secure_filename(file.filename)
         file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         file.save(file_path)
