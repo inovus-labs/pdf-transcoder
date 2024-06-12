@@ -2,8 +2,10 @@ from flask import Flask, request, jsonify, send_file
 import subprocess
 import os
 from werkzeug.utils import secure_filename
-
+from flask_cors import CORS,cross_origin
 app = Flask(__name__)
+CORS(app) 
+
 
 # Configuration
 UPLOAD_FOLDER = 'uploads'
@@ -45,6 +47,7 @@ def test():
     return jsonify("This is test route"), 200
 
 @app.route('/xlsx-to-pdf', methods=['POST'])
+@cross_origin(origins=['http://inovuslabs.org'])
 def upload_file():
     if 'file' not in request.files:
         return jsonify(error="No file part"), 400
@@ -73,6 +76,7 @@ def upload_file():
 
 
 @app.route('/docx-to-pdf', methods=['POST'])
+@cross_origin(origins=['http://inovuslabs.org'])
 def upload_docx_file():
     if 'file' not in request.files:
         return jsonify(error="No file part"), 400
