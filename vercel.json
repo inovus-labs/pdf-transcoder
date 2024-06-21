@@ -1,11 +1,11 @@
 {
-    "build": {
-      "env": {
-        "PYTHON_VERSION": "3.7.2",
-        "PIP_TARGET": "/vercel/path0/.python_packages/lib/python3.7/site-packages",
-        "PYTHONUSERBASE": "/vercel/path0/.python_packages"
+    "devCommand": "uvicorn main:app --host 0.0.0.0 --port 3000",
+    "builds": [
+      {
+        "src": "/server.py",
+        "use": "@vercel/python"
       }
-    },
+    ],
     "routes": [
       {
         "src": "/(.*)",
@@ -13,4 +13,3 @@
       }
     ]
   }
-  
