@@ -114,7 +114,7 @@ def upload_docx_file():
     return jsonify(error="Invalid file type"), 400
 
 @app.route('/html-to-pdf', methods=['POST'])
-@cross_origin(origins=['http://inovuslabs.org',''])
+@cross_origin(origins=['http://inovuslabs.org','https://badhusha.me'])
 def upload_html_file():
     if 'file' not in request.files:
         return jsonify(error="No file part"), 400
